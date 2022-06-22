@@ -65,3 +65,20 @@ pred.class<-predict(delays_nb,newdata=valid_df)
 pred_df<-data.frame(actual=valid_df$delay,predicted=pred.class,pred.prob)
 
 pred_df[valid_df$carrier=="DL"&valid_df$dayweek==7&valid_df$dest=="LGA"&valid_df$origin=="DCA",]
+
+# training confusionmatrix
+pred.class<-predict(delays_nb,newdata=train_df)
+confusionMatrix(pred.class,as.factor(train_df$delay))
+
+# validation confusionmatrix
+pred.class<-predict(delays_nb,newdata=valid_df)
+confusionMatrix(pred.class,as.factor(valid_df$delay))
+
+# 나이브 베이즈 분류기 향상차트
+gain <- gains(ifelse(valid_df$delay=="delayed",1,0),pred.prob[,1],groups=100)
+
+plot(c(0,gain$cume.pct.of.total*sum(valid_df$delay=="delayed"))~c(0,gain$cume.obs),
+     xlab="# cases",ylab = "Cumulative",main="",type="l")
+lines(c(0,sum(valid_df$delay=="delayed"))~c(0,dim(valid_df)[1]),lty=2,col="blue")
+
+
